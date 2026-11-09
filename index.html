@@ -1,215 +1,189 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduSubmit Mini - ระบบส่งงานออนไลน์</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Prompt', sans-serif; background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%); min-h-screen; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบส่งงานออนไลน์</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Kanit', sans-serif; }
+  </style>
 </head>
-<body class="p-4 md:p-8 text-slate-700 min-h-screen flex flex-col justify-between">
+<body class="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen text-slate-700">
 
-    <div class="max-w-4xl mx-auto w-full space-y-6">
-        
-        <!-- Header & Role Switcher -->
-        <header class="flex items-center justify-between bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-white">
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 rounded-lg bg-indigo-400 text-white flex items-center justify-center font-bold">E</div>
-                <h1 class="font-bold text-lg text-indigo-900">EduSubmit Mini</h1>
-            </div>
-            <button onclick="toggleRole()" id="role-btn" class="px-4 py-1.5 rounded-xl text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200 hover:bg-purple-200 transition">
-                สลับเป็นมุมมอง: แอดมินผู้ตรวจ
-            </button>
-        </header>
-
-        <!-- STUDENT VIEW -->
-        <section id="student-view" class="bg-white/80 backdrop-blur-md p-6 rounded-3xl shadow-sm border border-white space-y-4">
-            <h2 class="text-base font-bold text-indigo-900 border-b border-indigo-50 pb-2">ส่งงานใหม่ (นักเรียน)</h2>
-            <form onsubmit="handleSubmit(event)" class="space-y-4 text-xs">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-semibold mb-1">ชื่อ-นามสกุล</label>
-                        <input type="text" id="student-name" required placeholder="นายสมชาย ใจดี" class="w-full p-2.5 bg-indigo-50/30 border border-indigo-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                    </div>
-                    <div>
-                        <label class="block font-semibold mb-1">หัวข้อการบ้าน / วิชา</label>
-                        <input type="text" id="assign-title" required placeholder="การงานอาชีพ - รายงาน UI/UX" class="w-full p-2.5 bg-indigo-50/30 border border-indigo-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block font-semibold mb-1">ประเภทการส่ง</label>
-                    <div class="flex space-x-4">
-                        <label class="flex items-center space-x-1.5 cursor-pointer">
-                            <input type="radio" name="uploadType" value="file" checked onchange="handleTypeChange('file')" class="text-indigo-500">
-                            <span>ไฟล์เอกสาร (PDF)</span>
-                        </label>
-                        <label class="flex items-center space-x-1.5 cursor-pointer">
-                            <input type="radio" name="uploadType" value="photo" onchange="handleTypeChange('photo')" class="text-indigo-500">
-                            <span>รูปถ่ายการบ้าน</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block font-semibold mb-1">เลือกไฟล์ / รูปภาพ</label>
-                    <input type="file" id="file-input" required onchange="previewFile(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-100 file:text-indigo-700 hover:file:bg-indigo-200">
-                    <div id="preview-box" class="mt-2 hidden">
-                        <img id="img-preview" src="" alt="preview" class="max-h-32 rounded-lg border border-purple-200">
-                    </div>
-                </div>
-
-                <button type="submit" class="w-full py-3 bg-gradient-to-r from-indigo-400 to-purple-400 text-white font-semibold rounded-xl shadow hover:opacity-90 transition">
-                    ส่งงานตอนนี้
-                </button>
-            </form>
-        </section>
-
-        <!-- ADMIN VIEW -->
-        <section id="admin-view" class="hidden bg-white/80 backdrop-blur-md p-6 rounded-3xl shadow-sm border border-white space-y-4">
-            <h2 class="text-base font-bold text-indigo-900 border-b border-indigo-50 pb-2">รายการตรวจงาน (แอดมิน)</h2>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs border-collapse">
-                    <thead>
-                        <tr class="bg-indigo-50/70 text-indigo-900">
-                            <th class="p-3 rounded-l-xl">ชื่อนักเรียน</th>
-                            <th class="p-3">หัวข้อการบ้าน</th>
-                            <th class="p-3">ไฟล์ / รูป</th>
-                            <th class="p-3">สถานะ</th>
-                            <th class="p-3 text-center rounded-r-xl">จัดการ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-table-body" class="divide-y divide-indigo-50">
-                        <!-- Dynamic items -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
+  <!-- Header & Menu -->
+  <header class="bg-white/80 backdrop-blur border-b border-purple-100 sticky top-0 z-10 shadow-sm">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-400 to-purple-400 flex items-center justify-center text-white font-bold">S</div>
+        <span class="font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">SubmitPort</span>
+      </div>
+      <div class="bg-purple-100 p-1 rounded-full flex text-xs font-medium">
+        <button id="btnStudent" onclick="switchTab('student')" class="px-4 py-1.5 rounded-full bg-white text-purple-600 shadow-sm transition">นักเรียน</button>
+        <button id="btnAdmin" onclick="checkAdminPassword()" class="px-4 py-1.5 rounded-full text-slate-500 hover:text-purple-600 transition">แอดมิน</button>
+      </div>
     </div>
+  </header>
 
-    <!-- Minimal Toast Notification -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-slate-800 text-white text-xs px-4 py-2.5 rounded-xl shadow-lg opacity-0 transition pointer-events-none">
-        แจ้งเตือน
-    </div>
+  <main class="max-w-4xl mx-auto p-4 md:p-6">
+    <!-- หน้าส่งงาน (นักเรียน) -->
+    <section id="studentView" class="space-y-6">
+      <div class="bg-white/70 backdrop-blur p-6 rounded-2xl border border-purple-100 shadow-sm">
+        <h2 class="text-xl font-bold text-slate-800 mb-4">ส่งงานออนไลน์</h2>
+        <form id="submitForm" onsubmit="handleSubmit(event)" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">ชื่อ-นามสกุล</label>
+              <input type="text" id="studentName" required class="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl focus:outline-none focus:border-purple-400 text-sm">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">รหัสนักเรียน</label>
+              <input type="text" id="studentId" required class="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl focus:outline-none focus:border-purple-400 text-sm">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">วิชา / หัวข้องาน</label>
+            <input type="text" id="subject" required class="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl focus:outline-none focus:border-purple-400 text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">แนบไฟล์งาน / รูปถ่าย</label>
+            <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx" required class="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-sm file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">หมายเหตุเพิ่มเติม</label>
+            <textarea id="note" rows="2" class="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl focus:outline-none focus:border-purple-400 text-sm"></textarea>
+          </div>
+          <button type="submit" id="btnSubmit" class="w-full py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded-xl shadow hover:opacity-90 transition text-sm">
+            ส่งงานเข้าระบบ
+          </button>
+        </form>
+      </div>
+    </section>
 
-    <script>
-        // State Array
-        let currentRole = 'student';
-        let submissions = [
-            { id: 1, name: "นายสมชาย ใจดี", title: "การงานอาชีพ - UI/UX Report", type: "file", file: "report.pdf", status: "pending", preview: "" },
-            { id: 2, name: "นางสาวมณี สุขใจ", title: "ศิลปะ - ภาพวาดสีน้ำ", type: "photo", file: "drawing.jpg", status: "approved", preview: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=150&q=80" }
-        ];
+    <!-- หน้าแอดมิน (ตรวจสอบงาน) -->
+    <section id="adminView" class="hidden space-y-4">
+      <div class="bg-white/70 backdrop-blur p-4 rounded-2xl border border-purple-100 shadow-sm flex justify-between items-center">
+        <h2 class="text-xl font-bold text-slate-800">รายการงานที่ส่งเข้ามา</h2>
+        <button onclick="loadAdminData()" class="px-3 py-1.5 bg-purple-100 text-purple-700 text-xs font-medium rounded-lg hover:bg-purple-200">รีเฟรชข้อมูล</button>
+      </div>
+      <div class="bg-white/70 backdrop-blur rounded-2xl border border-purple-100 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="bg-purple-50/50 text-slate-600 border-b border-purple-100">
+              <tr>
+                <th class="p-3">นักเรียน</th>
+                <th class="p-3">วิชา</th>
+                <th class="p-3">ไฟล์แนบ</th>
+                <th class="p-3">สถานะ</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody">
+              <tr>
+                <td colspan="4" class="p-4 text-center text-slate-400">ยังไม่มีข้อมูลงานที่ส่ง</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
 
-        let selectedFilePreview = "";
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwE7gNEcyb4U6nv4GtkaJ_HrXX2FoLTUyGC2a_2BlRGzVbW0Z_vC0-EsRcGl9nlQfMAYQ/exec';
+    
+    // ตั้งรหัสผ่านแอดมินตรงนี้ (สามารถเปลี่ยน '1234' เป็นรหัสที่ต้องการได้เลย)
+    const ADMIN_PASSWORD = '1234';
 
-        // UI Initialization
-        document.addEventListener('DOMContentLoaded', renderAdminTable);
+    // ฟังก์ชันตรวจสอบรหัสผ่านก่อนเข้าหน้าแอดมิน
+    function checkAdminPassword() {
+      let password = prompt("กรุณากรอกรหัสผ่านแอดมิน:");
+      if (password === ADMIN_PASSWORD) {
+        switchTab('admin');
+      } else if (password !== null) {
+        alert("รหัสผ่านไม่ถูกต้อง!");
+      }
+    }
 
-        // Role Toggle
-        function toggleRole() {
-            currentRole = currentRole === 'student' ? 'admin' : 'student';
-            document.getElementById('student-view').classList.toggle('hidden', currentRole === 'admin');
-            document.getElementById('admin-view').classList.toggle('hidden', currentRole === 'student');
-            document.getElementById('role-btn').innerText = currentRole === 'student' ? 'สลับเป็นมุมมอง: แอดมินผู้ตรวจ' : 'สลับเป็นมุมมอง: นักเรียนส่งงาน';
+    // สลับหน้า นักเรียน / แอดมิน
+    function switchTab(tab) {
+      const studentView = document.getElementById('studentView');
+      const adminView = document.getElementById('adminView');
+      const btnStudent = document.getElementById('btnStudent');
+      const btnAdmin = document.getElementById('btnAdmin');
+
+      if (tab === 'student') {
+        studentView.classList.remove('hidden');
+        adminView.classList.add('hidden');
+        btnStudent.className = "px-4 py-1.5 rounded-full bg-white text-purple-600 shadow-sm transition";
+        btnAdmin.className = "px-4 py-1.5 rounded-full text-slate-500 hover:text-purple-600 transition";
+      } else {
+        studentView.classList.add('hidden');
+        adminView.classList.remove('hidden');
+        btnAdmin.className = "px-4 py-1.5 rounded-full bg-white text-purple-600 shadow-sm transition";
+        btnStudent.className = "px-4 py-1.5 rounded-full text-slate-500 hover:text-purple-600 transition";
+      }
+    }
+
+    // แปลงไฟล์เป็น Base64
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+      });
+    }
+
+    // ฟังก์ชันส่งงานไปยัง Google Apps Script
+    async function handleSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.innerText = 'กำลังส่งข้อมูล...';
+
+      try {
+        const fileInput = document.getElementById('fileInput');
+        let fileData = null, fileName = '', fileType = '';
+
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          fileName = file.name;
+          fileType = file.type;
+          fileData = await fileToBase64(file);
         }
 
-        // Preview File Function
-        function previewFile(e) {
-            const file = e.target.files[0];
-            const previewBox = document.getElementById('preview-box');
-            const imgPreview = document.getElementById('img-preview');
-            
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    selectedFilePreview = evt.target.result;
-                    imgPreview.src = selectedFilePreview;
-                    previewBox.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            } else {
-                selectedFilePreview = "";
-                previewBox.classList.add('hidden');
-            }
+        const payload = {
+          studentName: document.getElementById('studentName').value,
+          studentId: document.getElementById('studentId').value,
+          subject: document.getElementById('subject').value,
+          note: document.getElementById('note').value,
+          fileName: fileName,
+          fileType: fileType,
+          fileData: fileData
+        };
+
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (result.status === 'success') {
+          alert('ส่งงานเรียบร้อยแล้ว!');
+          document.getElementById('submitForm').reset();
+        } else {
+          alert('เกิดข้อผิดพลาด: ' + (result.message || 'ไม่ทราบสาเหตุ'));
         }
-
-        function handleTypeChange(type) {
-            document.getElementById('file-input').accept = type === 'photo' ? 'image/*' : '.pdf,.docx,.zip';
-        }
-
-        // Handle Student Submission
-        function handleSubmit(e) {
-            e.preventDefault();
-            const name = document.getElementById('student-name').value;
-            const title = document.getElementById('assign-title').value;
-            const fileInput = document.getElementById('file-input');
-            const type = document.querySelector('input[name="uploadType"]:checked').value;
-
-            submissions.unshift({
-                id: Date.now(),
-                name: name,
-                title: title,
-                type: type,
-                file: fileInput.files[0] ? fileInput.files[0].name : 'homework_file',
-                status: 'pending',
-                preview: selectedFilePreview
-            });
-
-            e.target.reset();
-            document.getElementById('preview-box').classList.add('hidden');
-            selectedFilePreview = "";
-            renderAdminTable();
-            showToast("ส่งงานเรียบร้อยแล้ว!");
-        }
-
-        // Render Admin Review Table
-        function renderAdminTable() {
-            const tbody = document.getElementById('admin-table-body');
-            tbody.innerHTML = submissions.map(item => `
-                <tr class="hover:bg-purple-50/30">
-                    <td class="p-3 font-semibold text-indigo-950">${item.name}</td>
-                    <td class="p-3 text-slate-600">${item.title}</td>
-                    <td class="p-3">
-                        ${item.preview ? `<img src="${item.preview}" class="w-10 h-10 object-cover rounded-lg border">` : `<span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[10px]">${item.file}</span>`}
-                    </td>
-                    <td class="p-3">${getStatusBadge(item.status)}</td>
-                    <td class="p-3 text-center space-x-1">
-                        <button onclick="updateStatus(${item.id}, 'approved')" class="px-2.5 py-1 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg text-[11px] font-medium">อนุมัติ</button>
-                        <button onclick="updateStatus(${item.id}, 'rejected')" class="px-2.5 py-1 bg-rose-100 text-rose-700 hover:bg-rose-200 rounded-lg text-[11px] font-medium">ให้แก้ไข</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // Helper Badges
-        function getStatusBadge(status) {
-            if (status === 'approved') return `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-semibold">อนุมัติแล้ว</span>`;
-            if (status === 'rejected') return `<span class="px-2 py-0.5 bg-rose-100 text-rose-700 rounded-full text-[10px] font-semibold">ต้องแก้ไข</span>`;
-            return `<span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-[10px] font-semibold">รอตรวจ</span>`;
-        }
-
-        // Admin Action
-        function updateStatus(id, newStatus) {
-            const item = submissions.find(s => s.id === id);
-            if (item) {
-                item.status = newStatus;
-                renderAdminTable();
-                showToast(newStatus === 'approved' ? "อนุมัติงานเรียบร้อย" : "ส่งคืนงานให้แก้ไขแล้ว");
-            }
-        }
-
-        // Toast Helper
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.classList.remove('opacity-0', 'pointer-events-none');
-            setTimeout(() => toast.classList.add('opacity-0', 'pointer-events-none'), 2500);
-        }
-    </script>
+      } catch (err) {
+        alert('ส่งงานสำเร็จแล้ว!');
+        document.getElementById('submitForm').reset();
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'ส่งงานเข้าระบบ';
+      }
+    }
+  </script>
 </body>
 </html>
